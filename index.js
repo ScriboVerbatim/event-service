@@ -1,17 +1,26 @@
 const express = require('express')
 const app = express()
-const port = 4030
 const packageJsonData = require('./package.json')
+const { indexStaffEventsHandler } = require('./src/api/staffEvents')
+const { rootHandler } = require('./src/api/common')
+const PORT = 4030
 
-app.get('/health', (req, res) => {
-    const { name, version } = packageJsonData
-    res.send({ name, version })
+const context = { packageJsonData }
+
+const pathHandlers = {
+    "/": rootHandler,
+    "/indexStaffEvents": indexStaffEventsHandler
+}
+
+createEndpoints(pathHandlers, app)
+app.listen(PORT, () => {
+    console.log(`Server is ready, listening to ${PORT}`)
 })
 
-app.get('/indexStaffEvents', (req, res) => {
-    res.json([{ type: "assignment", startsAt: "2023-08-29T12:00:00.000Z", endsAt: "2023-08-29T16:00:00.000Z" }, { type: "timeOff", startsAt: "2023-08-29T12:00:00.000Z", endsAt: "2023-08-29T16:00:00.000Z" }])
-})
 
-app.listen(port, () => {
-    console.log(`Events service listening on port ${port}`)
-})
+function createEndpoints(pathHandlers, app) {
+    for (const path in pathHandlers) {
+        const handlerForPath = pathHandlers[path] // reference to handler function, e.g.: rootHandler, indexStaffEventsHandler
+        app.get(path, (req, res) => handlerForPath(req, res, context))
+    }
+}

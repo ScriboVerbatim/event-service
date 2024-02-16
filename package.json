@@ -1,7 +1,7 @@
 {
   "name": "events-service",
   "version": "1.0.0",
-  "description": "Manages staff events",
+  "description": "Service to manage staff events",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
